@@ -7,7 +7,7 @@
 3. Construye la app, sube los mapas y arráncala con Docker siguiendo los pasos de abajo.
 4. Abre [http://localhost:8080](http://localhost:8080) y pulsa uno de los tres botones.
 
-No pongas claves secretas de AWS en `.env` ni en el código del navegador. Usa AWS CLI con un perfil/rol que tenga permisos para actualizar el monitor y subir objetos al bucket.
+No pongas claves secretas de AWS en `.env` ni en el código del navegador.
 
 ## Repetición de sesiones
 
@@ -21,10 +21,10 @@ El plugin oculta por defecto el texto y los campos de entrada de la página. La 
 
 ## Mapas de fuentes para stack traces
 
-La compilación de Vite genera mapas ocultos en `dist/` (`vite.config.js`). El contenedor elimina los `.map` antes de publicar la app: súbelos únicamente al bucket privado de S3. El bucket debe estar en la misma región que el monitor.
+La compilación de Vite genera mapas ocultos en `dist/` (`vite.config.js`). El contenedor elimina los `.map` antes de publicar la app. Los mapas listos para subir están en `source-maps/<RUM_RELEASE_ID>/`. Súbelos únicamente a un bucket privado de S3, en la misma región que el monitor. Los mapas contienen el código fuente original: no los publiques en el sitio web.
 
 1. Usa un `RUM_RELEASE_ID` único para cada compilación. El mismo valor identifica la carpeta S3 y la versión enviada por el SDK.
-2. Permite que CloudWatch RUM lea los mapas. En la política del bucket, agrega este permiso y reemplaza los valores entre `< >`:
+2. En la consola de S3, crea un bucket privado en la región del monitor. En **Permissions > Bucket policy**, agrega el permiso siguiente y reemplaza los marcadores. Si el bucket ya tiene una política, agrega el objeto a su arreglo `Statement`; no elimines las reglas existentes.
 
    ```json
    {
@@ -45,28 +45,17 @@ La compilación de Vite genera mapas ocultos en `dist/` (`vite.config.js`). El c
    }
    ```
 
-3. Genera los `.map` y súbelos bajo la carpeta del release:
+3. Genera los `.map` localmente:
 
    ```sh
-   set -a
-   . ./.env
-   set +a
    npm ci
    npm run build
-   aws s3 sync dist/ "s3://${RUM_SOURCEMAP_BUCKET}/${RUM_RELEASE_ID}/" \
-     --exclude "*" --include "*.map" --region "$AWS_REGION"
    ```
 
-4. Habilita los mapas para el monitor:
+   Copia únicamente los archivos `.map` desde `dist/assets/` a la carpeta `source-maps/<RUM_RELEASE_ID>/`. Para la compilación actual, el archivo está en `source-maps/workshop-release-1/index-BcgcGe7e.js.map`. En la consola de S3, abre el bucket, crea una carpeta con el nombre exacto de `RUM_RELEASE_ID`, entra a esa carpeta y pulsa **Upload** para subir los `.map`. El objeto debe quedar así:
 
-   ```sh
-   aws rum update-app-monitor \
-     --name "$RUM_APP_MONITOR_NAME" \
-     --region "$AWS_REGION" \
-     --deobfuscation-configuration \
-     "{\"JavaScriptSourceMaps\":{\"Status\":\"ENABLED\",\"S3Uri\":\"s3://${RUM_SOURCEMAP_BUCKET}\"}}"
-   ```
+   `s3://<BUCKET>/<RUM_RELEASE_ID>/<nombre-exacto-del-bundle>.js.map`
 
-   Si ya están habilitados, puedes omitir este paso. Inicia o reconstruye el contenedor con `docker compose up --build`; su configuración RUM recibe el mismo `RUM_RELEASE_ID`.
+4. En **CloudWatch > RUM > App monitors**, abre el monitor y edítalo. Activa **Unminify JavaScript error stack traces** (mapas de JavaScript) e indica la URI `s3://<BUCKET>`. Guarda los cambios. La política del bucket debe autorizar la lectura por `rum.amazonaws.com`, restringida por cuenta y ARN del monitor, como en el paso 2.
 
-El SDK usa ese ID para buscar archivos con la estructura `s3://<BUCKET>/<RELEASE_ID>/<archivo>.js.map`. Mantén cada versión de los mapas en su propia carpeta y no sobrescribas mapas de releases anteriores. Consulta la [guía oficial de mapas de CloudWatch RUM](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-JavaScriptStackTraceSourceMaps.html).
+5. La app ya usa el mismo `RUM_RELEASE_ID` de `.env`. Si lo cambiaste, reinicia el contenedor para que lo lea. Genera un error nuevo y revisa el evento en RUM; la desofuscación solo se aplica a eventos nuevos. Mantén los mapas de cada release bajo su carpeta correspondiente. Consulta la [guía oficial de mapas de CloudWatch RUM](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-JavaScriptStackTraceSourceMaps.html).
