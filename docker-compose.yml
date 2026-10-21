@@ -1,0 +1,11 @@
+services:
+  rum-demo:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      RUM_APP_MONITOR_ID: ${RUM_APP_MONITOR_ID:-}
+      RUM_IDENTITY_POOL_ID: ${RUM_IDENTITY_POOL_ID:-}
+      RUM_RELEASE_ID: ${RUM_RELEASE_ID:-}
+    restart: unless-stopped

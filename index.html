@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f7f8" />
+    <title>Northstar | Demo del taller RUM</title>
+  </head>
+  <body>
+    <main class="page">
+      <section class="demo" aria-labelledby="page-title">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">⌁</span>northstar<span class="brand-dot">.</span></div>
+        <p class="rum-status" id="rum-status" role="status">Comprobando CloudWatch RUM…</p>
+        <h1 id="page-title">Generar eventos RUM</h1>
+        <p class="intro">Pulsa un botón para enviar un evento de demostración a CloudWatch RUM.</p>
+        <div class="event-buttons">
+          <button class="event-button error" id="trigger-js-error" type="button"><span aria-hidden="true">●</span>Error de JavaScript</button>
+          <button class="event-button warning" id="trigger-promise-error" type="button"><span aria-hidden="true">●</span>Rechazo de promesa</button>
+          <button class="event-button" id="trigger-http-error" type="button"><span aria-hidden="true">●</span>Solicitud HTTP 500</button>
+        </div>
+        <p class="event-status" id="event-status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script src="/config.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

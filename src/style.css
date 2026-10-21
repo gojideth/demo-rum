@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #1e2a32;
+  background: #f5f7f7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --muted: #728087;
+  --teal: #168f80;
+}
+
+* { box-sizing: border-box; }
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+button { font: inherit; }
+
+.page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px 18px;
+}
+
+.demo {
+  width: min(100%, 520px);
+  padding: 35px;
+  border: 1px solid #e5ebeb;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 36px #18313b0a;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #18313b;
+  font: 800 18px Manrope, sans-serif;
+  letter-spacing: -.6px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  color: #fff;
+  background: var(--teal);
+  font-size: 19px;
+}
+
+.brand-dot { color: var(--teal); }
+.rum-status { margin: 28px 0 8px; color: #849097; font-size: 11px; }
+h1 { margin: 0 0 8px; font: 700 25px Manrope, sans-serif; letter-spacing: -.7px; }
+.intro { margin: 0 0 23px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.event-buttons { display: grid; gap: 10px; }
+.event-button {
+  min-height: 48px;
+  padding: 0 15px;
+  border: 1px solid #dfe7e6;
+  border-radius: 7px;
+  color: #35464b;
+  background: #fff;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.event-button:hover { transform: translateY(-1px); border-color: #a7cec5; background: #f8fcfa; }
+.event-button:focus-visible { outline: 3px solid #168f8033; outline-offset: 2px; }
+.event-button span { margin-right: 10px; color: var(--teal); }
+.event-button.error span { color: #bc6862; }
+.event-button.warning span { color: #b88a43; }
+.event-status { min-height: 18px; margin: 15px 0 0; color: var(--muted); font-size: 11px; }
+
+@media (max-width: 480px) {
+  .demo { padding: 25px 20px; }
+  h1 { font-size: 22px; }
+}

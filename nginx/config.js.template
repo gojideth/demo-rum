@@ -1,0 +1,6 @@
+window.RUM_CONFIG = {
+  appMonitorId: "${RUM_APP_MONITOR_ID}",
+  region: "${AWS_REGION}",
+  identityPoolId: "${RUM_IDENTITY_POOL_ID}",
+  releaseId: "${RUM_RELEASE_ID}"
+};
